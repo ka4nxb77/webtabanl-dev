@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oyun - Proje</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Web Tabanlı Programlama Dönem Projesi</h1>
+    </header>
+
+    <nav>
+        <a href="index.html">Ana Sayfa</a>
+        <a href="kayit.html">Kayıt Ol</a>
+        <a href="oyun.html" class="aktif">Eğlenceli Oyun</a>
+    </nav>
+
+    <main class="icerik">
+        <h2>Sayı Tahmin Oyunu</h2>
+        <p>1 ile 100 arasında rastgele bir sayı tuttum. Bakalım kaç denemede bulabileceksin?</p>
+        
+        <div style="margin: 20px 0;">
+            <input type="number" id="tahmin-input" placeholder="Tahmininizi yazın" min="1" max="100" 
+                   style="width: 80%; padding: 10px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ccc;">
+            
+            <button id="tahmin-btn" class="btn-gonder">Tahmin Et</button>
+            <button id="yeniden-btn" class="btn-gonder" style="display: none; background-color: #3498db;">Yeniden Başla</button>
+        </div>
+
+        <p id="mesaj" style="font-size: 18px; font-weight: bold; min-height: 25px;"></p>
+    </main>
+
+    <script>
+        // Oyun Değişkenleri
+        let rastgeleSayi = Math.floor(Math.random() * 100) + 1;
+        let denemeSayisi = 0;
+
+        // HTML Elemanları
+        const tahminInput = document.getElementById('tahmin-input');
+        const tahminBtn = document.getElementById('tahmin-btn');
+        const yenidenBtn = document.getElementById('yeniden-btn');
+        const mesaj = document.getElementById('mesaj');
+
+        // Tahmin Et Butonuna Basıldığında
+        tahminBtn.addEventListener('click', function() {
+            const tahmin = parseInt(tahminInput.value);
+            
+            // Geçersiz girdi kontrolü
+            if (isNaN(tahmin) || tahmin < 1 || tahmin > 100) {
+                mesaj.textContent = "Lütfen 1 ile 100 arasında geçerli bir sayı girin! ⚠️";
+                mesaj.style.color = "#e74c3c";
+                return;
+            }
+
+            denemeSayisi++;
+
+            // Tahmin Kontrolleri (If-Else Yapısı)
+            if (tahmin === rastgeleSayi) {
+                mesaj.textContent = `Tebrikler! ${denemeSayisi}. denemede doğru sayıyı (${rastgeleSayi}) buldun! 🎉`;
+                mesaj.style.color = "#2ecc71";
+                tahminBtn.style.display = 'none'; // Tahmin butonunu gizle
+                yenidenBtn.style.display = 'block'; // Yeniden başla butonunu göster
+            } else if (tahmin < rastgeleSayi) {
+                mesaj.textContent = "Daha BÜYÜK bir sayı girin! ⬆️";
+                mesaj.style.color = "#3498db";
+            } else {
+                mesaj.textContent = "Daha KÜÇÜK bir sayı girin! ⬇️";
+                mesaj.style.color = "#e67e22";
+            }
+
+            // Girdi kutusunu temizle ve odağı orada tut
+            tahminInput.value = '';
+            tahminInput.focus();
+        });
+
+        // Yeniden Başla Butonuna Basıldığında
+        yenidenBtn.addEventListener('click', function() {
+            rastgeleSayi = Math.floor(Math.random() * 100) + 1;
+            denemeSayisi = 0;
+            mesaj.textContent = 'Yeni sayı tutuldu! Hadi tahmin et.';
+            mesaj.style.color = "#2c3e50";
+            tahminBtn.style.display = 'block';
+            yenidenBtn.style.display = 'none';
+            tahminInput.value = '';
+        });
+    </script>
+
+</body>
+</html>
