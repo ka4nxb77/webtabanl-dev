@@ -20,7 +20,7 @@
 
     <main class="icerik">
         <h2>Hesap Oluştur</h2>
-        <form class="kayit-formu" onsubmit="alert('Kayıt başarılı!'); return false;">
+        <form class="kayit-formu" id="kayitFormu">
             <div class="form-grup">
                 <label for="email">Gmail Adresiniz:</label>
                 <input type="email" id="email" placeholder="ornek@gmail.com" required>
@@ -34,6 +34,67 @@
             <button type="submit" class="btn-gonder">Kayıt Ol</button>
         </form>
     </main>
+
+    <script type="module">
+        // Firebase SDK'larını CDN üzerinden import ediyoruz
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+
+        // Senin sağladığın Firebase konfigürasyon bilgileri
+        const firebaseConfig = {
+            apiKey: "AIzaSyB2KTv8GvWUs9F4ZSKTRKAmPutvXjit8kw",
+            authDomain: "test1-d8872.firebaseapp.com",
+            projectId: "test1-d8872",
+            storageBucket: "test1-d8872.firebasestorage.app",
+            messagingSenderId: "1064935949380",
+            appId: "1:1064935949380:web:25c4bb5dfecc8300572811",
+            measurementId: "G-4L19GPJQ64"
+        };
+
+        // Firebase'i başlat
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const analytics = getAnalytics(app);
+
+        // Form elementini seçelim
+        const form = document.getElementById('kayitFormu');
+
+        // Form gönderildiğinde çalışacak fonksiyon
+        form.addEventListener('submit', (e) => {
+            e.preventDefault(); // Sayfanın yenilenmesini engellemek için
+
+            const email = document.getElementById('email').value;
+            const sifre = document.getElementById('sifre').value;
+
+            // Firebase Authentication ile kullanıcı oluşturma
+            createUserWithEmailAndPassword(auth, email, sifre)
+                .then((userCredential) => {
+                    // Kayıt başarılı
+                    alert('Kayıt başarılı! Hoş geldiniz.');
+                    
+                    // Google Analytics'e kayıt başarılı etkinliği (event) gönderiyoruz
+                    logEvent(analytics, 'sign_up', { method: 'email' });
+
+                    form.reset(); // Formu temizle
+                })
+                .catch((error) => {
+                    // Hata durumları
+                    const errorCode = error.code;
+                    
+                    // Kullanıcıya daha tatlı hata mesajları göstermek için:
+                    if (errorCode === 'auth/email-already-in-use') {
+                        alert('Bu e-posta adresi zaten kullanımda!');
+                    } else if (errorCode === 'auth/weak-password') {
+                        alert('Şifre çok zayıf! En az 6 karakter olmalıdır.');
+                    } else if (errorCode === 'auth/invalid-email') {
+                        alert('Geçersiz bir e-posta adresi girdiniz.');
+                    } else {
+                        alert('Bir hata oluştu: ' + error.message);
+                    }
+                });
+        });
+    </script>
 
 </body>
 </html>
